@@ -24,12 +24,36 @@
 
         </div>
         <div class="col-sm-3">
+            <p id="mensajes"></p>
         </div>
     </div>
     </div>
 </body>
 
 <script>
+    // ws = websocket.WebSocket()
+    // ws.connect("ws://172.21.1.202/ws")
+
+    // setInterval(function () {
+    //     result = ws.recv();
+    //     var mensajes_p = document.getElementById("mensajes");
+    //     mensajes_p.innerHTML = result;
+    // }, 100);
+
+    const socket = new WebSocket('ws://172.21.1.202/ws');
+
+    // Connection opened
+    socket.addEventListener('open', function (event) {
+        socket.send('Hello Server!');
+    });
+
+    // Listen for messages
+    socket.addEventListener('message', function (event) {
+        console.log('Message from server ', event.data);
+        var mensajes_p = document.getElementById("mensajes");
+        mensajes_p.innerHTML = event.data;
+    });
+
     // Create an XMLHttpRequest object
     const xhttp = new XMLHttpRequest();
 

@@ -27,6 +27,17 @@ const uint8_t portalButton = D1; // TODO: confirm the location and logic of this
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 
+AsyncWebSocket ws("/ws");
+AsyncWebSocketClient* wsClient;
+ 
+void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
+  if(type == WS_EVT_CONNECT){
+    wsClient = client;
+  } else if(type == WS_EVT_DISCONNECT){
+    wsClient = nullptr;
+  }
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -51,10 +62,18 @@ void setup()
     }
     ConnectToWifi();
     timeClient.setTimeOffset(-10800);
+
+    ws.onEvent(onWsEvent);
+    server.addHandler(&ws);
 }
 
 void loop()
 {
+    if(wsClient != nullptr && wsClient->canSend()) {
+    // .. send hello message :-)
+    wsClient->text(String("Hello client" + String(millis())));
+  }
+  
 }
 
 void ConnectToWifi()
